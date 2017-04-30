@@ -40,7 +40,7 @@ EEPROMClassEx::EEPROMClassEx()
   :  _allowedWrites(100)
 {
 }
- 
+
 /******************************************************************************
  * User API
  ******************************************************************************/
@@ -50,22 +50,22 @@ EEPROMClassEx::EEPROMClassEx()
  */
 void EEPROMClassEx::setMemPool(int base, int memSize) {
 	//Base can only be adjusted if no addresses have already been issued
-	if (_nextAvailableaddress == _base) 
+	if (_nextAvailableaddress == _base)
 		_base = base;
 		_nextAvailableaddress=_base;
-	
+
 	//Ceiling can only be adjusted if not below issued addresses
-	if (memSize >= _nextAvailableaddress ) 
+	if (memSize >= _nextAvailableaddress )
 		_memSize = memSize;
 
-	#ifdef _EEPROMEX_DEBUG    
-	if (_nextAvailableaddress != _base) 
+	#ifdef _EEPROMEX_DEBUG
+	if (_nextAvailableaddress != _base)
 		Serial.println("Cannot change base, addresses have been issued");
 
-	if (memSize < _nextAvailableaddress )  
+	if (memSize < _nextAvailableaddress )
 		Serial.println("Cannot change ceiling, below issued addresses");
-	#endif	
-	
+	#endif
+
 }
 
 /**
@@ -74,7 +74,7 @@ void EEPROMClassEx::setMemPool(int base, int memSize) {
 void EEPROMClassEx::setMaxAllowedWrites(int allowedWrites) {
 #ifdef _EEPROMEX_DEBUG
 	_allowedWrites = allowedWrites;
-#endif			
+#endif
 }
 
 /**
@@ -84,7 +84,7 @@ int EEPROMClassEx::getAddress(int noOfBytes){
 	int availableaddress   = _nextAvailableaddress;
 	_nextAvailableaddress += noOfBytes;
 
-#ifdef _EEPROMEX_DEBUG    
+#ifdef _EEPROMEX_DEBUG
 	if (_nextAvailableaddress > _memSize) {
 		Serial.println("Attempt to write outside of EEPROM memory");
 		return -availableaddress;
@@ -92,9 +92,9 @@ int EEPROMClassEx::getAddress(int noOfBytes){
 		return availableaddress;
 	}
 #endif
-	return availableaddress;		
+	return availableaddress;
 }
- 
+
 /**
  * Check if EEPROM memory is ready to be accessed
  */
@@ -115,9 +115,9 @@ uint8_t EEPROMClassEx::read(int address)
  * Read a single bit
  */
 bool EEPROMClassEx::readBit(int address, byte bit) {
-	  if (bit> 7) return false; 
+	  if (bit> 7) return false;
 	  if (!isReadOk(address+sizeof(uint8_t))) return false;
-	  byte byteVal =  eeprom_read_byte((unsigned char *) address);      
+	  byte byteVal =  eeprom_read_byte((unsigned char *) address);
 	  byte bytePos = (1 << bit);
       return (byteVal & bytePos);
 }
@@ -126,7 +126,7 @@ bool EEPROMClassEx::readBit(int address, byte bit) {
  * Read a single byte
  */
 uint8_t EEPROMClassEx::readByte(int address)
-{	
+{
 	if (!isReadOk(address+sizeof(uint8_t))) return 0;
 	return eeprom_read_byte((unsigned char *) address);
 }
@@ -134,7 +134,7 @@ uint8_t EEPROMClassEx::readByte(int address)
 /**
  * Read a single 16 bits integer
  */
-uint16_t EEPROMClassEx::readInt(int address)
+uint16_t EEPROMClassEx::readInt16(int address)
 {
 	if (!isReadOk(address+sizeof(uint16_t))) return 0;
 	return eeprom_read_word((uint16_t *) address);
@@ -143,7 +143,7 @@ uint16_t EEPROMClassEx::readInt(int address)
 /**
  * Read a single 32 bits integer
  */
-uint32_t EEPROMClassEx::readLong(int address)
+uint32_t EEPROMClassEx::readInt32(int address)
 {
 	if (!isReadOk(address+sizeof(uint32_t))) return 0;
 	return eeprom_read_dword((unsigned long *) address);
@@ -165,7 +165,7 @@ float EEPROMClassEx::readFloat(int address)
  */
 double EEPROMClassEx::readDouble(int address)
 {
-	if (!isReadOk(address+sizeof(double))) return 0;	
+	if (!isReadOk(address+sizeof(double))) return 0;
 	double _value;
 	readBlock<double>(address, _value);
 	return _value;
@@ -201,7 +201,7 @@ bool EEPROMClassEx::writeByte(int address, uint8_t value)
 /**
  * Write a single 16 bits integer
  */
-bool EEPROMClassEx::writeInt(int address, uint16_t value)
+bool EEPROMClassEx::writeInt16(int address, uint16_t value)
 {
 	if (!isWriteOk(address+sizeof(uint16_t))) return false;
 	eeprom_write_word((uint16_t *) address, value);
@@ -211,7 +211,7 @@ bool EEPROMClassEx::writeInt(int address, uint16_t value)
 /**
  * Write a single 32 bits integer
  */
-bool EEPROMClassEx::writeLong(int address, uint32_t value)
+bool EEPROMClassEx::writeInt32(int address, uint32_t value)
 {
 	if (!isWriteOk(address+sizeof(uint32_t))) return false;
 	eeprom_write_dword((unsigned long *) address, value);
@@ -223,7 +223,7 @@ bool EEPROMClassEx::writeLong(int address, uint32_t value)
  */
 bool EEPROMClassEx::writeFloat(int address, float value)
 {
-	return (writeBlock<float>(address, value)!=0);	
+	return (writeBlock<float>(address, value)!=0);
 }
 
 /**
@@ -231,7 +231,7 @@ bool EEPROMClassEx::writeFloat(int address, float value)
  */
 bool EEPROMClassEx::writeDouble(int address, double value)
 {
-	return (writeBlock<float>(address, value)!=0);	
+	return (writeBlock<float>(address, value)!=0);
 }
 
 /**
@@ -248,21 +248,21 @@ bool EEPROMClassEx::update(int address, uint8_t value)
  * Update a single bit
  * The EEPROM will only be overwritten if different. This will reduce wear.
  */
-bool EEPROMClassEx::updateBit(int address, uint8_t bit, bool value) 
+bool EEPROMClassEx::updateBit(int address, uint8_t bit, bool value)
 {
-	  if (bit> 7) return false; 
-	  
+	  if (bit> 7) return false;
+
 	  byte byteValInput  = readByte(address);
-	  byte byteValOutput = byteValInput;	  
+	  byte byteValOutput = byteValInput;
 	  // Set bit
-	  if (value) {	    
+	  if (value) {
 		byteValOutput |= (1 << bit);  //Set bit to 1
-	  } else {		
+	  } else {
 	    byteValOutput &= ~(1 << bit); //Set bit to 0
 	  }
 	  // Store if different from input
 	  if (byteValOutput!=byteValInput) {
-		writeByte(address, byteValOutput);	  
+		writeByte(address, byteValOutput);
 	  }
 	  return true;
 }
@@ -278,25 +278,25 @@ bool EEPROMClassEx::updateByte(int address, uint8_t value)
 }
 
 /**
- * Update a single 16 bits integer 
+ * Update a single 16 bits integer
  * The EEPROM will only be overwritten if different. This will reduce wear.
  */
-bool EEPROMClassEx::updateInt(int address, uint16_t value)
+bool EEPROMClassEx::updateInt16(int address, uint16_t value)
 {
 	return (updateBlock<uint16_t>(address, value)!=0);
 }
 
 /**
- * Update a single 32 bits integer 
+ * Update a single 32 bits integer
  * The EEPROM will only be overwritten if different. This will reduce wear.
  */
-bool EEPROMClassEx::updateLong(int address, uint32_t value)
+bool EEPROMClassEx::updateInt32(int address, uint32_t value)
 {
 	return (updateBlock<uint32_t>(address, value)!=0);
 }
 
 /**
- * Update a single float value 
+ * Update a single float value
  * The EEPROM will only be overwritten if different. This will reduce wear.
  */
 bool EEPROMClassEx::updateFloat(int address, float value)
@@ -318,20 +318,20 @@ bool EEPROMClassEx::updateDouble(int address, double value)
  */
 bool EEPROMClassEx::isWriteOk(int address)
 {
-#ifdef _EEPROMEX_DEBUG    
+#ifdef _EEPROMEX_DEBUG
 	_writeCounts++;
 	if (_allowedWrites == 0 || _writeCounts > _allowedWrites ) {
 		Serial.println("Exceeded maximum number of writes");
 		return false;
 	}
-	
+
 	if (address > _memSize) {
 		Serial.println("Attempt to write outside of EEPROM memory");
 		return false;
 	} else {
 		return true;
 	}
-#endif		
+#endif
 	return true;
 }
 
@@ -340,7 +340,7 @@ bool EEPROMClassEx::isWriteOk(int address)
  */
 bool EEPROMClassEx::isReadOk(int address)
 {
-#ifdef _EEPROMEX_DEBUG    
+#ifdef _EEPROMEX_DEBUG
 	if (address > _memSize) {
 		Serial.println("Attempt to write outside of EEPROM memory");
 		return false;
@@ -348,7 +348,43 @@ bool EEPROMClassEx::isReadOk(int address)
 		return true;
 	}
 #endif
-	return true;	
+	return true;
+}
+
+crc_t EEPROMClassEx::CRC(void const *data, int noOfBytes)
+{
+    crc_t remainder = 0;
+	const uint8_t *x = (uint8_t*)data;
+    /*
+     * Perform modulo-2 division, a byte at a time.
+     */
+    for (int byte = 0; byte < noOfBytes; ++byte)
+    {
+        /*
+         * Bring the next byte into the remainder.
+         */
+        remainder ^= (*(x + byte) << (WIDTH - 8));
+
+        /*
+         * Perform modulo-2 division, a bit at a time.
+         */
+        for (uint8_t bit = 8; bit > 0; --bit)
+        {
+            /*
+             * Try to divide the current data bit.
+             */
+            if (remainder & TOPBIT) {
+                remainder = (remainder << 1) ^ POLYNOMIAL;
+            } else {
+                remainder = (remainder << 1);
+            }
+        }
+    }
+
+    /*
+     * The final remainder is the CRC result.
+     */
+    return (remainder);
 }
 
 int EEPROMClassEx::_base= 0;

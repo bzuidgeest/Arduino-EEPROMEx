@@ -1,4 +1,4 @@
-# Arduino EEPROMEx library 
+# Arduino EEPROMEx library
 [![Build Status](https://travis-ci.org/thijse/Arduino-EEPROMEx.svg?branch=master)](https://travis-ci.org/thijse/Arduino-EEPROMEx)
 [![License: LGPL v21](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)](https://img.shields.io/badge/License-LGPL%20v2.1-blue.svg)
 
@@ -12,24 +12,24 @@ The EEPROMex library is an extension of the standard Arduino EEPROM library. It 
 * Basic memory allocation functionality. This is basically a counter of the first unallocated byte, and helps giving unique addresses to variables.
 * Enabling write limitation: In theory one can burn out a memory cell in a few minutes: a write/erase cycle takes approximately 4 ms, so writing 100.000 times to a single cell takes 6 1/2 min. Limiting the number of writes during the debug phase helps prevent this.
 * Debugging of writing out of memory range.
+* The read/write/update block function have an extra parameter to indicate if a safe write is desired. Safe write start every write with a marker. Then the length of data, the data itself and a CRC code. This is checked on reading back data. This makes it trivial to determine if read data is valid (if eeprom has been written before or not).
 
-
-And find detailed explanation and samples of the functionality here: 
+And find detailed explanation and samples of the functionality here:
 [http://thijs.elenbaas.net/2012/07/extended-eeprom-library-for-arduino](http://thijs.elenbaas.net/2012/07/extended-eeprom-library-for-arduino)
 
 ## Downloading
 
-This package can be downloaded in different manners 
+This package can be downloaded in different manners
 
 
 - The Arduino Library Manager: [see here how to use it](http://www.arduino.cc/en/guide/libraries#toc3).
 - The PlatformIO Library Manager: [see here how to use it](http://docs.platformio.org/en/latest/ide/arduino.html).
-- By directly loading fetching the Archive from GitHub: 
+- By directly loading fetching the Archive from GitHub:
  1. Go to [https://github.com/thijse/Arduino-EEPROMEx](https://github.com/thijse/Arduino-EEPROMEx)
  2. Click the DOWNLOAD ZIP button in the panel on the
  3. Rename the uncompressed folder **Arduino-EEPROMEx-master** to **EEPROMEx**.
  4. You may need to create the libraries subfolder if its your first library.  
- 5. Place the **EEPROMEx** library folder in your **arduinosketchfolder/libraries/** folder. 
+ 5. Place the **EEPROMEx** library folder in your **arduinosketchfolder/libraries/** folder.
  5. Restart the IDE.
  6. For more information, [read this extended manual](http://thijs.elenbaas.net/2012/07/installing-an-arduino-library/)
 - If you want to have a package that includes all referenced libraries, use the pre-packaged library
@@ -49,20 +49,20 @@ The aim of the library is to also support other standard data types: it currentl
 uint8_t read(int address);
 bool readBit(int address, byte bit)
 uint8_t readByte(int address);
-uint16_t readInt(int address);
-uint32_t readLong(int address);
+uint16_t readInt16(int address);
+uint32_t readInt32(int address);
 float readFloat(int address);
 double readDouble(int address);
 ```
 
-Where address is the starting position in EEPROM, and the return value the value read from EEPROM. 
+Where address is the starting position in EEPROM, and the return value the value read from EEPROM.
 
 ### For writing:
 ```
 bool write(int address, uint8_t value);
 bool writeByte(int address, uint8_t value);
-bool writeInt(int address, uint16_t value);
-bool writeLong(int address, uint32_t value);
+bool writeInt16(int address, uint16_t value);
+bool writeInt32(int address, uint32_t value);
 bool writeFloat(int address, float value);
 bool writeDouble(int address, double value);
 ```
@@ -71,8 +71,8 @@ The update functions are different from the write functions: they will check per
 ```
 bool update(int address, uint8_t value);
 bool updateByte(int address, uint8_t value);
-bool updateInt(int address, uint16_t value);
-bool updateLong(int address, uint32_t value);
+bool updateInt16(int address, uint16_t value);
+bool updateInt32(int address, uint32_t value);
 bool updateFloat(int address, float value);
 bool updateDouble(int address, double);
 ```
@@ -111,7 +111,7 @@ int writeBlock(int address, const T[]; value, int items)
 int updateBlock(int address, const T[]; value, int items)
 ```
 
-### Debugging EEPROM applications 
+### Debugging EEPROM applications
 
 It is easy to burn out a memory cell in few minutes, so during debugging it would be very useful to limit the number of allowed writes. It is easy to put a bracket at the wrong location, and placing an EEPROM write inside of a loop, rather than outside, and introduce extensive writing causing wear.  The following function helps limit the number of writes.
 
@@ -164,7 +164,7 @@ bool isReady();
 ## On using and modifying libraries
 
 - [http://www.arduino.cc/en/Main/Libraries](http://www.arduino.cc/en/Main/Libraries)
-- [http://www.arduino.cc/en/Reference/Libraries](http://www.arduino.cc/en/Reference/Libraries) 
+- [http://www.arduino.cc/en/Reference/Libraries](http://www.arduino.cc/en/Reference/Libraries)
 
 
 ## Copyright
